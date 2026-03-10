@@ -1,113 +1,94 @@
 import streamlit as st
 
-# 1. إعدادات الصفحة والديزاين (CSS) لعمل خلفية 3D وألوان فخمة
-st.set_page_config(page_title="Shawarma Al-Saj | شاورما ع الصاج", page_icon="🌯", layout="wide")
+# 1. إعدادات الصفحة والديزاين (الأحمر والأسود الفخم)
+st.set_page_config(page_title="شاورما ع الصاج - النسخة الملكية", page_icon="🌯", layout="wide")
 
 st.markdown("""
     <style>
+    /* خلفية متدرجة فخمة */
     .stApp {
-        background: linear-gradient(135deg, #000000 0%, #4b0000 100%);
+        background: linear-gradient(135deg, #000000 0%, #3d0000 100%);
         color: white;
     }
+    /* عنوان 3D */
     .main-title {
-        font-size: 50px;
+        font-size: 60px;
         font-weight: bold;
         text-align: center;
-        color: #ff4b4b;
-        text-shadow: 2px 2px 10px #000;
+        color: #ff0000;
+        text-shadow: 3px 3px 15px #ff4b4b, 0 0 25px #000;
+        margin-bottom: 20px;
     }
-    .stButton>button {
-        background-color: #ff4b4b;
-        color: white;
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0px 4px 15px rgba(255, 75, 75, 0.4);
-    }
+    /* تنسيق الكروت */
     .menu-card {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 20px;
-        border-radius: 15px;
-        border: 1px solid rgba(255, 75, 75, 0.3);
-        margin-bottom: 10px;
+        background: rgba(40, 0, 0, 0.6);
+        padding: 25px;
+        border-radius: 20px;
+        border: 2px solid #ff0000;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: 0px 10px 20px rgba(0,0,0,0.5);
+    }
+    .menu-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 15px 30px rgba(255,0,0,0.3);
     }
     </style>
-    """, unsafe_allow_status=True)
+    """, unsafe_allow_html=True) # تم تصحيح الكلمة هنا
 
-# 2. اختيار اللغة والاستقبال
-col_lang1, col_lang2 = st.columns([8, 2])
-with col_lang2:
-    lang = st.selectbox("🌐 Language", ["العربية", "English"])
+# 2. الاستقبال واختيار اللغة
+lang = st.sidebar.radio("🌐 Choose Language / اختر اللغة", ["العربية", "English"])
 
 if lang == "العربية":
-    title = "🌯 مطعم شاورما ع الصاج الذكي"
-    welcome_msg = "أهلاً بك في عالم القرمشة! نورتنا يا غالي، شو بنقدر نضبطلك اليوم؟"
-    order_btn = "تأكيد الطلب 🚀"
+    st.markdown("<h1 class='main-title'>🌯 شاورما ع الصاج الذكي</h1>", unsafe_allow_html=True)
+    st.write("### 🔥 أهلاً بك يا غالي! شرفتنا بمطعمنا، اطلب وتدلل..")
+    categories = ["الشاورما", "البرغر", "البروستد", "المشروبات"]
 else:
-    title = "🌯 Shawarma Al-Saj Smart Bot"
-    welcome_msg = "Welcome to the world of crunch! What can we prepare for you today?"
-    order_btn = "Confirm Order 🚀"
+    st.markdown("<h1 class='main-title'>🌯 Smart Shawarma Saj</h1>", unsafe_allow_html=True)
+    st.write("### 🔥 Welcome! The best food is waiting for you..")
+    categories = ["Shawarma", "Burgers", "Broasted", "Drinks"]
 
-st.markdown(f"<h1 class='main-title'>{title}</h1>", unsafe_allow_status=True)
-st.write(f"### {welcome_msg}")
-
-# 3. المنيو الضخم (شاورما، برغر، بروستد، مشروبات)
+# 3. المنيو الضخم
 menu = {
-    "قسم الشاورما": {
-        "ساندويش صاج عادي": 1.75,
-        "وجبة سوبر صاج": 3.50,
-        "سدر العيلة الملكي": 18.00
-    },
-    "قسم البرغر": {
-        "كلاسيك برغر لحم": 3.00,
-        "تشيكن برغر زقرت": 2.75,
-        "وجبة برغر دبل": 5.00
-    },
-    "قسم البروستد": {
-        "وجبة بروستد 4 قطع": 4.50,
-        "وجبة بروستد عائلية 8 قطع": 8.50
-    },
-    "المشروبات": {
-        "علبة ماتريكس": 0.50,
-        "عصير برتقال طبيعي": 1.50,
-        "مياه معدنية": 0.25
-    }
+    "الشاورما": {"ساندويش صاج": 1.75, "وجبة دبل": 4.50, "سدر العيلة الملكي": 18.00},
+    "البرغر": {"كلاسيك برغر لحم": 3.00, "وجبة برغر دبل": 5.50, "زنجر سوبريم": 3.25},
+    "البروستد": {"وجبة 4 قطع": 4.75, "وجبة عائلية 8 قطع": 9.00},
+    "المشروبات": {"علبة ماتريكس": 0.50, "عصير برتقال طبيعي": 1.50, "عصير تقال": 1.25}
 }
 
-# 4. اختيار الطلبات بدقة
-selected_items = {}
-st.sidebar.header("🛒 سلة المشتريات")
+# 4. نظام الطلبات
+if 'cart' not in st.session_state:
+    st.session_state.cart = []
 
-tabs = st.tabs(list(menu.keys()))
-for i, category in enumerate(menu.keys()):
+tabs = st.tabs(categories)
+for i, cat in enumerate(menu.keys()):
     with tabs[i]:
-        st.subheader(f"🔥 {category}")
-        cols = st.columns(len(menu[category]))
-        for j, (item, price) in enumerate(menu[category].items()):
-            with cols[j]:
-                st.markdown(f"<div class='menu-card'><b>{item}</b><br>{price} JOD</div>", unsafe_allow_status=True)
+        cols = st.columns(3)
+        for j, (item, price) in enumerate(menu[cat].items()):
+            with cols[j % 3]:
+                st.markdown(f"<div class='menu-card'><h3>{item}</h3><p style='color:#ff4b4b; font-size:20px;'>{price} JOD</p></div>", unsafe_allow_html=True)
                 if st.button(f"أضف {item}", key=item):
-                    selected_items[item] = price
-                    st.toast(f"تم إضافة {item}")
+                    st.session_state.cart.append({"name": item, "price": price})
+                    st.toast(f"✅ {item} انضاف للسلة")
 
-# 5. ملخص الطلب والرد الذكي
-total = sum(selected_items.values())
+# 5. الفاتورة والـ AI
+st.sidebar.markdown("## 🛒 سلتك")
+total = sum(item['price'] for item in st.session_state.cart)
 
-if total > 0:
-    st.sidebar.markdown("---")
-    st.sidebar.write("### طلباتك الحالية:")
-    for itm, prc in selected_items.items():
-        st.sidebar.write(f"- {itm}: {prc} JOD")
-    
-    st.sidebar.write(f"## المجموع: {total:.2f} JOD")
-    
-    if st.sidebar.button(order_btn):
+for order in st.session_state.cart:
+    st.sidebar.write(f"- {order['name']} ({order['price']} JOD)")
+
+st.sidebar.write(f"### المجموع: {total:.2f} JOD")
+
+if st.sidebar.button("🚀 تأكيد الطلب النهائي"):
+    if total > 0:
         st.balloons()
-        st.success("تم إرسال طلبك بنجاح!")
-        
         # رد الـ AI المميز
-        if "سدر العيلة الملكي" in selected_items:
-            st.info("🤖 AI: السدر الملكي بدو طاوله قوية! اختيار الملوك، رح نوصي فيك بالثومية!")
-        elif "علبة ماتريكس" in selected_items:
-            st.info("🤖 AI: ماتريكس وبرغر؟ هيك السهرة كملت! صحتين وعافية.")
-        elif total > 10:
-            st.info("🤖 AI: فاتورة دسمة لعيونك! رح نبعتلك عصير برتقال طبيعي ضيافة من المحل.")
+        if total >= 18:
+            st.info("🤖 AI: اختيار الملوك! السدر الملكي بدو ناس أكيلة، رح نوصي فيك بالثومية والبطاطا زيادة!")
+        elif "علبة ماتريكس" in [i['name'] for i in st.session_state.cart]:
+            st.info("🤖 AI: ماتريكس؟ اختيار زقرت! السهرة كملت هيك.")
+        else:
+            st.info("🤖 AI: صحتين وعافية! طلبك صار عند المعلم وقيد التجهيز.")
+    else:
+        st.sidebar.error("السلة فاضية يا حبيب!")
