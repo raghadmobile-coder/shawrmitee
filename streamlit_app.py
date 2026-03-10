@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import time
 
-# --- إعدادات الربط النهائية ---
+# --- إعدادات الربط ---
 TELEGRAM_TOKEN = "8766182179:AAfFCZKc5qJ7xgvisfkEhARahtyj-5guJJo"
 TELEGRAM_CHAT_ID = "7629461559"
 MY_PHONE = "0799633096"
@@ -14,14 +14,13 @@ def send_telegram_notification(order_details):
     except: pass
 
 # --- إعدادات الصفحة ---
-st.set_page_config(page_title="مطعم الضيعة | البوابة الملكية", page_icon="🌙", layout="wide")
+st.set_page_config(page_title="مطعم الضيعة | القائمة الرسمية", layout="wide")
 
-# إدارة الصفحات (البوابة هي الأصل)
 if 'page' not in st.session_state: st.session_state.page = 'gate'
 if 'cart' not in st.session_state: st.session_state.cart = []
 if 'total' not in st.session_state: st.session_state.total = 0.0
 
-# --- الستايل (البوابة الـ 7D + الاهتزاز القوي + التوهج) ---
+# --- الستايل النهائي (بدون إيموجي + اهتزاز قوي + سلة عائمة) ---
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
@@ -31,14 +30,12 @@ st.markdown(f"""
         text-align: right !important;
     }}
 
-    /* الاهتزاز الـ 7D القوي جداً */
     @keyframes strongVibration {{
         0% {{ transform: translate(0, 0) rotate(0deg); }}
         10% {{ transform: translate(-3px, -2px) rotate(-1deg); }}
         30% {{ transform: translate(0px, 4px) rotate(0.5deg); }}
         50% {{ transform: translate(-2px, 3px) rotate(-1deg); }}
         70% {{ transform: translate(3px, 2px) rotate(1deg); }}
-        90% {{ transform: translate(-1px, -1px) rotate(0deg); }}
         100% {{ transform: translate(0, 0) rotate(0deg); }}
     }}
 
@@ -46,39 +43,25 @@ st.markdown(f"""
     
     .stApp {{
         background: radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.35), transparent 45%),
-                    radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.2), transparent 45%),
                     linear-gradient(135deg, #005F9E 0%, #0095F6 50%, #003F6B 100%);
         background-attachment: fixed;
     }}
     
     .main-7d-container {{ animation: strongVibration 0.5s linear infinite; }}
 
-    /* البوابة الزرقاء */
-    .gate-overlay {{
-        height: 80vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }}
-
-    /* كروت المنيو مع التوهج الأصفر */
     .item-box {{
         background: rgba(255, 255, 255, 0.12);
         backdrop-filter: blur(15px);
-        padding: 25px; border-radius: 15px; 
+        padding: 20px; border-radius: 12px; 
         border: 1px solid rgba(255, 255, 255, 0.2);
-        margin-bottom: 12px; transition: 0.3s;
+        margin-bottom: 10px; transition: 0.3s;
     }}
     .item-box:hover {{
-        background: rgba(255, 215, 0, 0.3);
+        background: rgba(255, 215, 0, 0.25);
         border-color: #FFD700;
-        box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-        transform: scale(1.02);
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
     }}
 
-    /* السلة العائمة (Sticky) */
     [data-testid="stColumn"]:last-child {{
         position: sticky;
         top: 20px;
@@ -86,76 +69,91 @@ st.markdown(f"""
     }}
 
     .cart-section {{
-        background: white !important; padding: 25px; border-radius: 20px;
+        background: white !important; padding: 25px; border-radius: 15px;
         border: 4px solid #FFD700; color: #003F6B !important;
         box-shadow: 0 15px 40px rgba(0,0,0,0.5);
     }}
     .cart-section * {{ color: #003F6B !important; font-weight: bold; }}
 
-    /* زر الدخول الملكي */
     .stButton>button {{
-        border-radius: 50px !important;
-        font-weight: 900 !important;
-        transition: 0.4s !important;
+        border-radius: 8px !important;
+        font-weight: bold !important;
     }}
     </style>
 """, unsafe_allow_html=True)
 
-# --- محتوى الصفحات ---
+# --- محتوى المنيو الضخم ---
+full_menu = {
+    "عروض رمضان": [
+        {"n": "وجبة إفطار الضيعة الملكية", "p": 3.75},
+        {"n": "عرض رمضان شاورما (3 وجبات عربي + لتر كولا)", "p": 8.99},
+        {"n": "عرض العيلة الرمضاني بروستد مع شاورما", "p": 16.50}
+    ],
+    "العروض العائلية": [
+        {"n": "سدر الضيعة شاورما 64 قطعة مع سرفيس", "p": 14.50},
+        {"n": "بوكس التوفير العائلي شاورما وبرجر", "p": 11.00}
+    ],
+    "قسم الشاورما": [
+        {"n": "ساندويش شاورما عادي", "p": 0.95},
+        {"n": "ساندويش شاورما سوبر", "p": 1.95},
+        {"n": "وجبة شاورما عادي", "p": 2.25},
+        {"n": "وجبة شاورما دبل", "p": 3.50},
+        {"n": "وجبة شاورما تربل", "p": 4.75}
+    ],
+    "الزنجر والبرجر": [
+        {"n": "ساندويش زنجر", "p": 2.25},
+        {"n": "وجبة زنجر", "p": 3.50},
+        {"n": "برغر لحم كلاسيك", "p": 2.50},
+        {"n": "برغر دجاج سوبر", "p": 2.25}
+    ],
+    "قسم البروستد": [
+        {"n": "وجبة بروستد 4 قطع", "p": 3.25},
+        {"n": "وجبة بروستد 6 قطع", "p": 4.75},
+        {"n": "وجبة بروستد 12 قطعة", "p": 9.50},
+        {"n": "وجبة بروستد 16 قطعة", "p": 12.50},
+        {"n": "وجبة بروستد 21 قطعة عائلية", "p": 16.00}
+    ],
+    "وجبات الأطفال والإضافات": [
+        {"n": "وجبة أطفال (برجر صغير + بطاطا + عصير)", "p": 1.95},
+        {"n": "صحن بطاطا كبير", "p": 1.25},
+        {"n": "مثومة إضافية", "p": 0.25},
+        {"n": "شطة إضافية", "p": 0.25}
+    ]
+}
 
-# 1. صفحة البوابة (The Gate)
+# --- 1. صفحة البوابة ---
 if st.session_state.page == 'gate':
     st.markdown('<div class="main-7d-container">', unsafe_allow_html=True)
     st.markdown(f"""
-        <div class="gate-overlay">
-            <h1 style='font-size: 120px; text-shadow: 10px 10px 30px rgba(0,0,0,0.6); margin-bottom: 0;'>مطعم الضيعة</h1>
-            <h2 style='color: #FFD700 !important; font-size: 40px; margin-top: 10px;'>🌙 رمضان كريم - فطورك وعشاك عندنا 🌙</h2>
-            <div style='margin: 40px 0; font-size: 25px; background: rgba(0,0,0,0.2); padding: 10px 40px; border-radius: 50px; border: 1px solid #FFD700;'>
-                📞 للتواصل المباشر: {MY_PHONE}
+        <div style="height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <h1 style='font-size: 110px; margin-bottom: 0;'>مطعم الضيعة</h1>
+            <h2 style='color: #FFD700 !important; font-size: 35px;'>رمضان كريم - أهلاً بكم</h2>
+            <div style='margin: 30px 0; font-size: 22px; border: 1px solid #FFD700; padding: 10px 40px; border-radius: 50px;'>
+                للتواصل: {MY_PHONE}
             </div>
-        </div>
     """, unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns([1, 1.5, 1])
-    with col2:
-        if st.button("تفضلوا بدخول المنيو والعروض", use_container_width=True):
-            st.session_state.page = 'menu'
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    if st.button("الدخول إلى القائمة الكاملة", use_container_width=False):
+        st.session_state.page = 'menu'
+        st.rerun()
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
-# 2. صفحة المنيو (بعد ضغط الزر في البوابة)
+# --- 2. صفحة المنيو ---
 elif st.session_state.page == 'menu':
     st.markdown('<div class="main-7d-container">', unsafe_allow_html=True)
     
-    full_menu = {
-        "🌙 عروض رمضان": [
-            {"n": "وجبة إفطار الضيعة الملكية", "p": 3.75},
-            {"n": "عرض رمضان شاورما (3 وجبات عربي + لتر كولا)", "p": 8.99}
-        ],
-        "👨‍👩‍👧‍👦 عروض العيلة": [
-            {"n": "سدر الضيعة (64 قطعة شاورما + سرفيس كامل)", "p": 14.50},
-            {"n": "وليمة البروستد (12 قطعة + كولا عائلي)", "p": 9.99}
-        ],
-        "🌯 منيو الشاورما والزنجر": [
-            {"n": "شاورما سوبر الضيعة", "p": 1.95},
-            {"n": "ساندويش زنجر حار", "p": 2.25},
-            {"n": "برجر لحم كلاسيك", "p": 2.50}
-        ]
-    }
+    col_list, col_cart = st.columns([2.2, 1])
 
-    col_items, col_cart = st.columns([2.2, 1])
-
-    with col_items:
-        st.markdown(f"<h1 style='text-align:right;'>قائمة طعام الضيعة</h1>", unsafe_allow_html=True)
-        if st.button("⬅ العودة للبوابة الرئيسي", use_container_width=False):
+    with col_list:
+        st.markdown(f"<h2>قائمة الطعام الرسمية - للتواصل: {MY_PHONE}</h2>", unsafe_allow_html=True)
+        if st.button("العودة للرئيسية"):
             st.session_state.page = 'gate'; st.rerun()
 
-        for category, items in full_menu.items():
-            st.markdown(f"## {category}")
+        for cat, items in full_menu.items():
+            st.markdown(f"### {cat}")
             for item in items:
                 ci, cb = st.columns([5, 1])
                 with ci:
-                    st.markdown(f'<div class="item-box"><b>{item["n"]}</b><br><span style="color:#FFD700; font-size:1.2rem;">{item["p"]:.2f} JOD</span></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="item-box"><b>{item["n"]}</b><br><span style="color:#FFD700;">{item["p"]:.2f} JOD</span></div>', unsafe_allow_html=True)
                 with cb:
                     st.write("##")
                     if st.button("+", key=f"add_{item['n']}"):
@@ -165,22 +163,24 @@ elif st.session_state.page == 'menu':
 
     with col_cart:
         st.markdown('<div class="cart-section">', unsafe_allow_html=True)
-        st.markdown("<h3 style='text-align:center;'>🛒 سلة الطلبات</h3>", unsafe_allow_html=True)
+        st.markdown("<h3>سلة الطلبات</h3>", unsafe_allow_html=True)
         
         if not st.session_state.cart:
-            st.write("السلة فارغة")
+            st.write("قم باختيار الوجبات")
         else:
             for i in st.session_state.cart:
-                st.write(f"• {i['n']} ({i['p']:.2f})")
-            st.markdown(f"<hr><h3>المجموع: {st.session_state.total:.2f} JOD</h3>", unsafe_allow_html=True)
+                st.write(f"- {i['n']}")
+            st.markdown(f"<hr><h4>المجموع: {st.session_state.total:.2f} JOD</h4>", unsafe_allow_html=True)
             
-            pay_m = st.radio("طريقة الحساب:", ["كاش (عند الاستلام)", "فيزا / بطاقة"])
-            name = st.text_input("الأسم")
-            phone = st.text_input("رقم الهاتف")
+            pay_m = st.radio("طريقة الحساب", ["كاش عند الاستلام", "فيزا"])
+            u_name = st.text_input("الاسم الشخصي")
+            u_phone = st.text_input("رقم الهاتف")
             
-            if st.button("تأكيد الطلب الآن", use_container_width=True):
-                send_telegram_notification(f"طلب جديد: {name}\nرقم: {phone}\nالدفع: {pay_m}\nالقيمة: {st.session_state.total}")
-                st.success("تم الإرسال بنجاح!")
-                st.session_state.cart = []; st.session_state.total = 0.0; time.sleep(1); st.rerun()
+            if st.button("تأكيد وإرسال الطلب", use_container_width=True):
+                if u_name and u_phone:
+                    msg = f"طلب جديد!\nالاسم: {u_name}\nالهاتف: {u_phone}\nالدفع: {pay_m}\nالمجموع: {st.session_state.total:.2f}"
+                    send_telegram_notification(msg)
+                    st.success("تم استلام طلبك بنجاح")
+                    st.session_state.cart = []; st.session_state.total = 0.0; time.sleep(1); st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
