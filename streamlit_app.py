@@ -1,147 +1,157 @@
 import streamlit as st
+import requests
+
+# --- إعدادات إشعارات التليجرام (الحل الجذري للمسجات) ---
+# ملاحظة: للحصول على التوكن، ابحث عن @BotFather في تليجرام وأنشئ بوت جديد.
+TELEGRAM_TOKEN = "YOUR_BOT_TOKEN" 
+TELEGRAM_CHAT_ID = "YOUR_CHAT_ID"
+
+def send_telegram_notification(order_details):
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": order_details, "parse_mode": "HTML"}
+    try: requests.post(url, json=payload)
+    except: pass
 
 # 1. إعدادات الصفحة
-st.set_page_config(page_title="Shawarma Al-Saj | القمة", page_icon="🌯", layout="wide")
+st.set_page_config(page_title="Shawarma Al-Saj | My Order", page_icon="🌯", layout="wide")
 
-# إدارة حالة الموقع
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'cart' not in st.session_state: st.session_state.cart = []
 if 'total' not in st.session_state: st.session_state.total = 0.0
-if 'admin_orders' not in st.session_state: st.session_state.admin_orders = []
 
-# --- CSS (تنسيق البوابة والأقسام الضخمة) ---
+# --- CSS التنسيق المطور ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
     .stApp { background: radial-gradient(circle at center, #1a0000 0%, #000000 100%); color: white; font-family: 'Cairo', sans-serif; }
     
-    /* البوابة الملكية كما في الصورة */
+    /* البوابة الملكية */
     .info-box { 
-        text-align: center; padding: 45px; background: rgba(0, 0, 0, 0.85); 
-        border: 3px solid #ff4b4b; border-radius: 30px; max-width: 650px; 
-        margin: 80px auto 20px auto; box-shadow: 0 0 30px rgba(255, 75, 75, 0.6);
+        text-align: center; padding: 40px; background: rgba(0, 0, 0, 0.85); 
+        border: 2px solid #ff4b4b; border-radius: 25px; margin: 40px auto; 
     }
-    .shop-title { font-size: 50px; font-weight: 900; color: #ff4b4b; }
-
-    /* الأقسام الجانبية - بلوكات ضخمة مرتبة */
+    
+    /* أزرار الأقسام الضخمة */
     .stRadio div[role="radiogroup"] label {
-        background: rgba(255, 75, 75, 0.1) !important;
-        padding: 25px !important; border-radius: 15px !important;
-        font-size: 24px !important; font-weight: 900 !important;
-        border: 2px solid #ff4b4b !important; margin-bottom: 15px; color: white !important;
+        background: #111 !important; padding: 20px !important; border-radius: 12px !important;
+        font-size: 22px !important; font-weight: 700 !important;
+        border: 1px solid #ff4b4b !important; margin-bottom: 12px; color: white !important;
     }
 
-    /* كروت الطعام الضخمة */
+    /* كروت المنيو مع القيم الغذائية */
     .menu-item-card { 
-        background: rgba(255, 255, 255, 0.04); border-right: 10px solid #ff4b4b; 
-        padding: 40px; border-radius: 20px; margin-bottom: 30px; 
-        text-align: right; direction: rtl; 
+        background: rgba(255, 255, 255, 0.03); border-right: 8px solid #ff4b4b; 
+        padding: 30px; border-radius: 15px; margin-bottom: 20px; text-align: right; 
     }
-    .item-name { font-size: 38px; font-weight: 900; color: #fff; }
-    .item-price { font-size: 32px; color: #ff4b4b; font-weight: 900; }
+    .nutrition-tag { color: #00ffcc; font-size: 14px; font-weight: bold; margin-top: 8px; }
+    
+    /* عنوان السلة الجديد */
+    .order-header { font-size: 32px; font-weight: 900; color: #ff4b4b; margin-bottom: 20px; text-align: center; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 1. البوابة الملكية (كما في 1000064174.heic) ---
+# --- 1. صفحة الترحيب ---
 if st.session_state.page == 'welcome':
-    st.markdown("""
-        <div class='info-box'>
-            <div class='shop-title'>SHAWARMA AL-SAJ</div>
-            <div class='shop-details'>
-                👑 شاورما وبروستد ع الصاج.. جودة ملكية<br>
-                📍 عمان - إربد - الزرقاء<br>
-                📞 الخط الساخن: 079-0000000
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    col_lang, _ = st.columns([1, 3])
-    with col_lang:
-        st.markdown("<div style='display:flex; flex-direction:column; width:200px; margin-left:10%; margin-top:30px;'>", unsafe_allow_html=True)
-        if st.button("دخول للمنيو 🇯🇴"): st.session_state.page = 'menu'; st.rerun()
-        if st.button("English Menu 🇺🇸"): st.session_state.page = 'menu'; st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div class='info-box'><h1 style='color:#ff4b4b;'>SHAWARMA AL-SAJ</h1><p>الطعم الأصيل.. الجودة الملكية</p></div>", unsafe_allow_html=True)
+    col_l, _ = st.columns([1, 2])
+    with col_l:
+        if st.button("دخول للمنيو / Enter Menu 🇯🇴", use_container_width=True): 
+            st.session_state.page = 'menu'; st.rerun()
 
-# --- 2. المنيو المرتب صح ---
+# --- 2. صفحة المنيو الرئيسي ---
 elif st.session_state.page == 'menu':
-    col_side, col_main, col_cart = st.columns([0.8, 2.2, 1.2])
+    col_side, col_main, col_cart = st.columns([0.9, 2.1, 1.2])
 
+    # --- الأقسام (الترتيب اللي طلبته) ---
     with col_side:
         st.markdown("<h2 style='text-align:center;'>الأقسام</h2>", unsafe_allow_html=True)
-        # الترتيب الجديد حسب طلبك
         category = st.radio("", [
-            "🔥 العروض القوية",
-            "🌯 شاورما (أحجام)",
-            "👨‍👩‍👧‍👦 وجبات العيلة",
-            "🍗 بروستد مقرمش",
+            "🔥 العروض الملكية", 
+            "🌯 شاورما (أحجام)", 
+            "👨‍👩‍👧‍👦 وجبات العيلة", 
+            "🍗 بروستد مقرمش", 
             "🍟 قائمة الإضافات (جانبي)",
             "🥤 مشروبات"
         ])
 
+    # --- عرض الوجبات مع القيم الغذائية ---
     with col_main:
         st.markdown(f"<h1 style='text-align:right; color:#ff4b4b;'>{category}</h1>", unsafe_allow_html=True)
         
-        menu_items = {
-            "🔥 العروض القوية": [
-                ("أوفر الصحاب (2 سوبر)", 6.50, "2 ساندويش سوبر + بطاطا لارج + كولا"),
-                ("عرض الـ 3 وجبات", 8.00, "3 وجبات عربي عادي + سرفيس كامل")
+        menu_db = {
+            "🔥 العروض الملكية": [
+                ("أوفر الصحاب (2 سوبر)", 6.50, "وجبتين كاملات مع كولا لتر", "65g Protein | 1200 Cal"),
+                ("بوكس التوفير", 3.00, "وجبة عربي عادي + كولا علبة", "25g Protein | 600 Cal")
             ],
             "🌯 شاورما (أحجام)": [
-                ("شاورما عادي", 1.85, "صاج أصلي"),
-                ("شاورما سوبر", 2.75, "حجم أكبر"),
-                ("شاورما تربل (العملاق)", 4.25, "ثلاث أضعاف الدجاج")
+                ("شاورما عادي", 1.85, "خبز صاج، ثومية، مخلل", "22g Protein | 450 Cal"),
+                ("شاورما سوبر", 2.75, "دجاج إضافي وحجم أكبر", "32g Protein | 620 Cal"),
+                ("شاورما تربل", 4.25, "العملاق - 3 أضعاف الدجاج", "60g Protein | 950 Cal")
             ],
             "👨‍👩‍👧‍👦 وجبات العيلة": [
-                ("السدر الملكي (شاورما)", 18.50, "64 قطعة + بطاطا دبل + كولا عائلي")
+                ("السدر الملكي (شاورما)", 18.50, "64 قطعة + بطاطا دبل + كولا عائلي", "190g Protein | 4500 Cal")
             ],
             "🍗 بروستد مقرمش": [
-                ("بروستد 4 قطع", 4.25, "4 قطع + بطاطا + ثومية + كولا"),
-                ("وليمة بروستد 21 قطعة", 18.50, "21 قطعة + بطاطا عائلية دبل + كولا 2 لتر")
+                ("بروستد 4 قطع", 4.25, "مع بطاطا وثومية وكولا", "35g Protein | 800 Cal"),
+                ("بروستد 12 قطعة", 11.50, "حجم عائلي", "110g Protein | 2400 Cal"),
+                ("سدر بروستد 21 قطعة", 18.50, "وليمة ضخمة", "190g Protein | 4200 Cal")
             ],
             "🍟 قائمة الإضافات (جانبي)": [
-                ("علبة بطاطا - كبير", 2.25, "حجم عائلي"),
-                ("علبة مثومة - كبير", 1.00, "ثومية المحل الأصلية"),
-                ("خلطة المحل الخاصة", 0.50, "صوص الصاج السري")
+                ("بطاطا (صغير)", 1.25, "مقرمشة", "300 Cal"),
+                ("بطاطا (كبير)", 2.25, "حجم عائلي", "650 Cal"),
+                ("مثومة (3 أحجام)", 0.35, "ثومية المحل الأصلية", "150 Cal"),
+                ("علبة جبنة شيدر", 0.75, "جبنة سائلة ساخنة", "200 Cal"),
+                ("صوص المحل الخاص", 0.50, "خلطة الصاج السرية", "120 Cal")
             ],
-            "🥤 مشروبات": [("كولا / ماتريكس", 0.60, "بارد"), ("برتقال فريش", 1.75, "طبيعي")]
+            "🥤 مشروبات": [("كولا بارد", 0.60, "", "140 Cal")]
         }
 
-        for name, price, desc in menu_items[category]:
+        for name, price, desc, nut in menu_db[category]:
             st.markdown(f"""
                 <div class='menu-item-card'>
                     <div style='display:flex; justify-content:space-between; direction:ltr;'>
-                        <span class='item-price'>{price:.2f} JOD</span>
-                        <span class='item-name'>{name}</span>
+                        <span style='font-size:24px; color:#ff4b4b; font-weight:900;'>{price:.2f} JOD</span>
+                        <span style='font-size:26px; font-weight:900;'>{name}</span>
                     </div>
                     <div style='color:#bbb;'>{desc}</div>
+                    <div class='nutrition-tag'>📊 {nut}</div>
                 </div>
             """, unsafe_allow_html=True)
             
-            with st.expander("✨ تخصيص / إضافة للسلة"):
-                note = st.text_input("ملاحظات خاصة", key=f"n_{name}")
-                if st.button(f"إضافة {name}", key=f"b_{name}", use_container_width=True):
-                    st.session_state.cart.append({'n': name, 'p': price, 'note': note})
-                    st.session_state.total += price
-                    st.toast("تمت الإضافة ✅")
+            if st.button(f"أضف لـ My Order", key=name):
+                st.session_state.cart.append({'n': name, 'p': price})
+                st.session_state.total += price
+                st.toast(f"تم إضافة {name}")
 
+    # --- قسم السلة المطور (My Order) ---
     with col_cart:
-        st.markdown("<div style='background:#000; padding:20px; border-radius:20px; border:1px solid #333;'>", unsafe_allow_html=True)
-        st.header("🛒 السلة")
-        for item in st.session_state.cart:
-            st.write(f"🔹 **{item['n']}** ({item['p']:.2f})")
+        st.markdown("<div class='order-header'>MY ORDER</div>", unsafe_allow_html=True)
         
-        st.divider()
-        st.subheader(f"الحساب: {st.session_state.total:.2f} JOD")
-        u_name = st.text_input("الاسم")
-        u_phone = st.text_input("رقم الهاتف")
+        if not st.session_state.cart:
+            st.info("سلتك فارغة.. جرب عروضنا!")
+        else:
+            for i, item in enumerate(st.session_state.cart):
+                st.write(f"✅ {item['n']} - {item['p']:.2f} JOD")
+            
+            st.divider()
+            st.subheader(f"المجموع: {st.session_state.total:.2f} JOD")
+            
+            u_name = st.text_input("الاسم الشخصي")
+            u_phone = st.text_input("رقم التواصل")
 
-        if st.button("تأكيد الطلب 🚀", use_container_width=True):
-            if u_name and u_phone:
-                st.session_state.admin_orders.append({"customer": u_name, "items": st.session_state.cart})
-                st.success("✅ تم الاستلام! طلبك تحت المعالجة.")
-                st.session_state.cart = []; st.session_state.total = 0.0
-                st.balloons()
-            else: st.error("عبي بياناتك")
+            if st.button("إرسال الطلب للمطعم 🚀", use_container_width=True):
+                if u_name and u_phone:
+                    # تحضير رسالة التليجرام
+                    items_list = "\n".join([f"• {x['n']}" for x in st.session_state.cart])
+                    msg = f"<b>🔔 طلب جديد من الموقع!</b>\n\n👤 <b>الزبون:</b> {u_name}\n📞 <b>الهاتف:</b> {u_phone}\n\n📦 <b>الأصناف:</b>\n{items_list}\n\n💰 <b>الإجمالي:</b> {st.session_state.total:.2f} JOD"
+                    
+                    # إرسال الإشعار
+                    send_telegram_notification(msg)
+                    
+                    st.success(f"تم استلام طلبك يا {u_name}! سيتم الاتصال بك.")
+                    st.session_state.cart = []; st.session_state.total = 0.0
+                    st.balloons()
+                else:
+                    st.error("يرجى إدخال الاسم والرقم")
         
-        if st.button("⬅️ عودة"): st.session_state.page='welcome'; st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+        if st.button("⬅️ عودة للبوابة"): st.session_state.page='welcome'; st.rerun()
