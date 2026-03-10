@@ -1,168 +1,176 @@
 import streamlit as st
 
 # 1. إعدادات الصفحة
-st.set_page_config(page_title="Shawarma Al-Saj | شاورما ع الصاج", page_icon="🌯", layout="wide")
+st.set_page_config(page_title="Shawarma Al-Saj | القمة الملكية", page_icon="🌯", layout="wide")
 
-# تهيئة حالة الجلسة (Session State) لضمان تفعيل اللغة والتنقل
+# تهيئة حالة الجلسة
 if 'page' not in st.session_state: st.session_state.page = 'welcome'
 if 'lang' not in st.session_state: st.session_state.lang = 'Ar'
 if 'cart' not in st.session_state: st.session_state.cart = []
 if 'total' not in st.session_state: st.session_state.total = 0.0
 
-# --- CSS التصميم الاحترافي (Scroll & Shimmer) ---
+# --- CSS التصميم الفخم (Glassmorphism & Neon) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
     
     .stApp {
-        background: #0e1117;
+        background: radial-gradient(circle at top, #330000 0%, #000000 100%);
         color: white;
         font-family: 'Cairo', sans-serif;
     }
 
-    /* الهيدر الوميض */
-    .header-box {
+    /* البوابة المطورة */
+    .welcome-card {
         text-align: center;
-        padding: 30px;
-        background: rgba(255, 75, 75, 0.1);
-        border: 2px solid #ff4b4b;
-        border-radius: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 0 20px rgba(255, 75, 75, 0.2);
+        padding: 60px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 75, 75, 0.3);
+        border-radius: 40px;
+        backdrop-filter: blur(15px);
+        margin-top: 50px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     }
-    
-    .shimmer-text {
-        font-size: 50px;
+
+    .neon-title {
+        font-size: clamp(40px, 8vw, 90px);
         font-weight: 900;
-        color: #ff4b4b;
-        text-shadow: 0 0 10px rgba(255, 75, 75, 0.5);
+        color: #fff;
+        text-shadow: 0 0 10px #ff4b4b, 0 0 20px #ff4b4b, 0 0 40px #ff4b4b;
+        margin-bottom: 10px;
     }
 
-    /* نظام الـ Scroll للمنيو */
-    .menu-container {
-        max-height: 800px;
-        overflow-y: auto;
-        padding: 20px;
-        border-radius: 15px;
-        background: rgba(255, 255, 255, 0.02);
+    /* أزرار اللغة */
+    .lang-btn {
+        background: linear-gradient(45deg, #ff4b4b, #a30000);
+        color: white !important;
+        border-radius: 50px !important;
+        padding: 15px 40px !important;
+        font-weight: bold !important;
+        border: none !important;
+        transition: 0.3s !important;
     }
 
-    .menu-card {
-        background: #1c1f26;
-        border-radius: 15px;
-        margin-bottom: 20px;
-        border: 1px solid #333;
-        transition: 0.3s;
+    /* كروت المنيو الضخمة */
+    .item-card {
+        background: #111;
+        border-radius: 25px;
+        margin-bottom: 25px;
+        border: 1px solid #222;
+        overflow: hidden;
+        transition: 0.4s;
     }
-    .menu-card:hover { border-color: #ff4b4b; transform: translateY(-5px); }
+    .item-card:hover { border-color: #ff4b4b; transform: translateY(-10px); }
+    .item-img { width: 100%; height: 280px; object-fit: cover; border-bottom: 3px solid #ff4b4b; }
+    .price { color: #ff4b4b; font-size: 24px; font-weight: bold; }
     
-    .item-img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        border-radius: 15px 15px 0 0;
-    }
-    
-    .price-tag {
-        color: #ff4b4b;
-        font-size: 22px;
-        font-weight: bold;
-    }
+    /* نظام السكرول */
+    .scroll-area { max-height: 1000px; overflow-y: auto; padding-right: 15px; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- الصفحة الأولى: بوابة اللغة (مفعلة بالكامل) ---
+# --- الصفحة الأولى: البوابة الملكية ---
 if st.session_state.page == 'welcome':
-    st.markdown("<div class='header-box'>", unsafe_allow_html=True)
-    st.markdown("<h1 class='shimmer-text'>SHAWARMA AL-SAJ</h1>", unsafe_allow_html=True)
-    st.write("📍 عمان - إربد - الزرقاء | 📞 079-0000000")
+    st.markdown("<div class='welcome-card'>", unsafe_allow_html=True)
+    st.markdown("<h1 class='neon-title'>SHAWARMA AL-SAJ</h1>", unsafe_allow_html=True)
+    st.markdown("<h2 style='letter-spacing: 5px; color: #ddd;'>شاورما ع الصاج</h2>", unsafe_allow_html=True)
+    st.write("📍 فروعنا تغطي المملكة | 📞 خدمة العملاء: 079-0000000")
     st.divider()
     
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("القائمة العربية 🇯🇴", use_container_width=True):
-            st.session_state.lang = 'Ar'
-            st.session_state.page = 'menu'
-            st.rerun()
-    with col2:
-        if st.button("English Menu 🇺🇸", use_container_width=True):
-            st.session_state.lang = 'En'
-            st.session_state.page = 'menu'
-            st.rerun()
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("القائمة العربية 🇯🇴", key="ar_btn", use_container_width=True):
+            st.session_state.lang = 'Ar'; st.session_state.page = 'menu'; st.rerun()
+    with c2:
+        if st.button("English Menu 🇺🇸", key="en_btn", use_container_width=True):
+            st.session_state.lang = 'En'; st.session_state.page = 'menu'; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-# --- الصفحة الثانية: المنيو المتكامل ---
+# --- الصفحة الثانية: المنيو الإمبراطوري ---
 elif st.session_state.page == 'menu':
     L = st.session_state.lang
-    
-    # نصوص اللغة
-    txt = {
-        'Ar': {'title': 'منيو شاورما ع الصاج الملكي', 'cart': 'سلة الطلبات', 'total': 'الإجمالي', 'checkout': 'تأكيد الطلب'},
-        'En': {'title': 'Royal Shawarma Al-Saj Menu', 'cart': 'Your Cart', 'total': 'Total', 'checkout': 'Checkout'}
-    }
-
-    st.markdown(f"<h1 style='text-align:center; color:#ff4b4b;'>{txt[L]['title']}</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='text-align:center; color:#ff4b4b;'>{'القائمة الإمبراطورية 👑' if L=='Ar' else 'The Imperial Menu 👑'}</h1>", unsafe_allow_html=True)
     
     col_menu, col_cart = st.columns([2.5, 1])
 
     with col_menu:
-        st.markdown("<div class='menu-container'>", unsafe_allow_html=True)
+        tabs = st.tabs(["🌯 الشاورما", "🍔 الزنجر والتندر", "🍗 الأجنحة والبونليس", "🥗 الشيش والفرط", "🥤 المشروبات"])
         
-        # 🌟 سدر العيلة الملكي (الصورة الجديدة الاحترافية)
-        st.markdown("### 👑 العروض الملكية")
-        st.markdown(f"""
-            <div class='menu-card'>
-                <img src='https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=800' class='item-img'>
-                <div style='padding:20px;'>
-                    <h3>{"سدر العيلة الإمبراطوري" if L=='Ar' else "Imperial Family Tray"}</h3>
-                    <p>{"60 قطعة شاورما عربي دجاج، بطاطا عائلية، 4 أنواع ثومية، مخلل، ولتر ونصف كولا." if L=='Ar' else "60 pcs Shawarma, Family Fries, 4 Dips, Pickles, & 1.5L Coke."}</p>
-                    <span class='price-tag'>18.50 JOD</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        if st.button("أضف السدر الملكي 🛒", key="king"):
-            st.session_state.cart.append({'n': 'سدر ملكي', 'p': 18.50})
-            st.session_state.total += 18.50
-            st.toast("✅ Added!")
+        # --- قسم الشاورما ---
+        with tabs[0]:
+            st.markdown("<div class='scroll-area'>", unsafe_allow_html=True)
+            items = [
+                ("سدر العيلة الملكي VIP", 18.50, "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=800", "60 قطعة، بطاطا، 4 ثومية، كولا لتر ونص"),
+                ("وجبة سوبر صاج عربي", 3.75, "https://images.unsplash.com/photo-1662145031215-9898246d60a5?w=500", "ساندويش ضخم مقطع، بطاطا، ثومية، مخلل"),
+                ("شاورما صاج عائلي", 12.00, "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=500", "32 قطعة شاورما عربي مع كافة المقبلات")
+            ]
+            for name, price, img, desc in items:
+                st.markdown(f"<div class='item-card'><img src='{img}' class='item-img'><div style='padding:20px;'><h3>{name}</h3><p style='color:#bbb;'>{desc}</p><span class='price'>{price} JOD</span></div></div>", unsafe_allow_html=True)
+                if st.button(f"أضف {name}", key=name): 
+                    st.session_state.cart.append({'n': name, 'p': price}); st.session_state.total += price; st.toast("✅")
 
-        # 🌯 الأصناف الأخرى (Scrollable)
-        items = [
-            ("وجبة صاج سوبر", 3.75, "https://images.unsplash.com/photo-1662145031215-9898246d60a5?w=500"),
-            ("بروستد 4 قطع", 4.95, "https://images.unsplash.com/photo-1626645738196-c2a7c8d08f58?w=500"),
-            ("عصير برتقال فريش", 1.75, "https://images.unsplash.com/photo-1613478223719-2ab802602423?w=500")
-        ]
-        
-        for name, price, img in items:
-            st.markdown(f"""
-                <div class='menu-card'>
-                    <img src='{img}' class='item-img'>
-                    <div style='padding:15px;'>
-                        <h4>{name}</h4>
-                        <span class='price-tag'>{price} JOD</span>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-            if st.button(f"أضف {name}", key=name):
-                st.session_state.cart.append({'n': name, 'p': price})
-                st.session_state.total += price
-                st.toast("✅")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
+        # --- قسم الزنجر والتندر ---
+        with tabs[1]:
+            items = [
+                ("ساندويش زنجر سوبريم", 3.50, "https://images.unsplash.com/photo-1610614819513-58e34989848b?w=500", "صدر دجاج حار، جبنة، خس، مايونيز سبيشال"),
+                ("وجبة تندر 5 قطع", 4.50, "https://images.unsplash.com/photo-1562967914-608f82629710?w=500", "قطع تندر مقرمشة، بطاطا، صوص هني ماسترد"),
+                ("برغر دجاج كريسبي", 3.25, "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=500", "قطعة دجاج ضخمة، خبز بريوش، صوص الجبنة")
+            ]
+            for name, price, img, desc in items:
+                st.markdown(f"<div class='item-card'><img src='{img}' class='item-img'><div style='padding:20px;'><h3>{name}</h3><p>{desc}</p><span class='price'>{price} JOD</span></div></div>", unsafe_allow_html=True)
+                if st.button(f"أضف {name}", key=name): st.session_state.cart.append({'n': name, 'p': price}); st.session_state.total += price
 
+        # --- قسم الأجنحة والبونليس ---
+        with tabs[2]:
+            items = [
+                ("أجنحة دجاج (12 قطعة)", 5.50, "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=500", "اختيارك من صوص (بافلو، باربيكيو، ثوم ولون)"),
+                ("بونليس دجاج (بوكس)", 4.75, "https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=500", "قطع دجاج بدون عظم مغطاة بالصوص الحار"),
+            ]
+            for name, price, img, desc in items:
+                st.markdown(f"<div class='item-card'><img src='{img}' class='item-img'><div style='padding:20px;'><h3>{name}</h3><p>{desc}</p><span class='price'>{price} JOD</span></div></div>", unsafe_allow_html=True)
+                if st.button(f"أضف {name}", key=name): st.session_state.cart.append({'n': name, 'p': price}); st.session_state.total += price
+
+        # --- قسم الشيش والفرط ---
+        with tabs[3]:
+            items = [
+                ("وجبة شيش طاووق", 5.25, "https://images.unsplash.com/photo-1598514982205-f36b96d1e8d4?w=500", "أسياخ شيش مشوية على الصاج، أرز أو بطاطا، ثومية"),
+                ("شاورما فرط (بالغرام)", 6.00, "https://images.unsplash.com/photo-1633383718081-22ac93e3dbf1?w=500", "250غم شاورما دجاج صافي مع سرفيس كامل")
+            ]
+            for name, price, img, desc in items:
+                st.markdown(f"<div class='item-card'><img src='{img}' class='item-img'><div style='padding:20px;'><h3>{name}</h3><p>{desc}</p><span class='price'>{price} JOD</span></div></div>", unsafe_allow_html=True)
+                if st.button(f"أضف {name}", key=name): st.session_state.cart.append({'n': name, 'p': price}); st.session_state.total += price
+
+        # --- قسم المشروبات ---
+        with tabs[4]:
+            items = [
+                ("عصير برتقال فريش", 1.75, "https://images.unsplash.com/photo-1613478223719-2ab802602423?w=500", "طبيعي 100% بدون سكر مضاف"),
+                ("ماتريكس كولا / مشروب غازي", 0.60, "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500", "بارد ومنعش")
+            ]
+            for name, price, img, desc in items:
+                st.markdown(f"<div class='item-card'><img src='{img}' class='item-img'><div style='padding:20px;'><h3>{name}</h3><p>{desc}</p><span class='price'>{price} JOD</span></div></div>", unsafe_allow_html=True)
+                if st.button(f"أضف {name}", key=name): st.session_state.cart.append({'n': name, 'p': price}); st.session_state.total += price
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+
+    # --- السلة والبيانات ---
     with col_cart:
-        st.markdown(f"### 🛒 {txt[L]['cart']}")
-        for item in st.session_state.cart:
-            st.write(f"- {item['n']} ({item['p']} JOD)")
+        st.markdown("<div style='background:rgba(255,255,255,0.05); padding:20px; border-radius:20px;'>", unsafe_allow_html=True)
+        st.header("🛒 السلة الملكية")
+        for i, item in enumerate(st.session_state.cart):
+            st.write(f"{i+1}. {item['n']} - {item['p']} JOD")
         st.divider()
-        st.subheader(f"{txt[L]['total']}: {st.session_state.total:.2f} JOD")
+        st.subheader(f"الإجمالي: {st.session_state.total:.2f} JOD")
         
         if st.session_state.total > 0:
-            name = st.text_input("الاسم / Name")
-            phone = st.text_input("الهاتف / Phone")
-            if st.button(txt[L]['checkout']):
-                st.success("تم استلام طلبك بنجاح!")
-                st.balloons()
+            name = st.text_input("اسم العميل")
+            phone = st.text_input("رقم الهاتف")
+            method = st.radio("طريقة الدفع", ["كاش", "فيزا (تبرع بالبقشيش للكابتن)"])
+            if st.button("تأكيد الطلب وإرسال الموقع 🚀"):
+                st.success(f"تم! شكرًا {name}، رح نتواصل معك فورًا."); st.balloons()
+        
+        if st.button("🔄 تفريغ السلة"): st.session_state.cart=[]; st.session_state.total=0.0; st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    if st.button("⬅️ Back / عودة"):
-        st.session_state.page = 'welcome'
-        st.rerun()
+    if st.button("⬅️ عودة للبوابة"): st.session_state.page = 'welcome'; st.rerun()
+
+st.markdown("<center style='margin-top:50px; color:#666;'>📍 شاورما ع الصاج - الجودة شعارنا | 2026</center>", unsafe_allow_html=True)
