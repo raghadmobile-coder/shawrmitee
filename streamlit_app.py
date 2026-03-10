@@ -1,51 +1,113 @@
 import streamlit as st
 
-# إعدادات الصفحة
-st.set_page_config(page_title="شاورما ع الصاج", page_icon="🌯")
+# 1. إعدادات الصفحة والديزاين (CSS) لعمل خلفية 3D وألوان فخمة
+st.set_page_config(page_title="Shawarma Al-Saj | شاورما ع الصاج", page_icon="🌯", layout="wide")
 
-st.title("🌯 مطعم شاورما ع الصاج - أونلاين")
-st.markdown("---")
+st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(135deg, #000000 0%, #4b0000 100%);
+        color: white;
+    }
+    .main-title {
+        font-size: 50px;
+        font-weight: bold;
+        text-align: center;
+        color: #ff4b4b;
+        text-shadow: 2px 2px 10px #000;
+    }
+    .stButton>button {
+        background-color: #ff4b4b;
+        color: white;
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0px 4px 15px rgba(255, 75, 75, 0.4);
+    }
+    .menu-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 75, 75, 0.3);
+        margin-bottom: 10px;
+    }
+    </style>
+    """, unsafe_allow_status=True)
 
-# المنيو
+# 2. اختيار اللغة والاستقبال
+col_lang1, col_lang2 = st.columns([8, 2])
+with col_lang2:
+    lang = st.selectbox("🌐 Language", ["العربية", "English"])
+
+if lang == "العربية":
+    title = "🌯 مطعم شاورما ع الصاج الذكي"
+    welcome_msg = "أهلاً بك في عالم القرمشة! نورتنا يا غالي، شو بنقدر نضبطلك اليوم؟"
+    order_btn = "تأكيد الطلب 🚀"
+else:
+    title = "🌯 Shawarma Al-Saj Smart Bot"
+    welcome_msg = "Welcome to the world of crunch! What can we prepare for you today?"
+    order_btn = "Confirm Order 🚀"
+
+st.markdown(f"<h1 class='main-title'>{title}</h1>", unsafe_allow_status=True)
+st.write(f"### {welcome_msg}")
+
+# 3. المنيو الضخم (شاورما، برغر، بروستد، مشروبات)
 menu = {
-    "ساندويش عادي": 1.75,
-    "وجبة سوبر": 3.50,
-    "وجبة دبل": 4.50,
-    "سدر العيلة الملكي": 18.00,
-    "بوكس السعادة": 12.50,
-    "بطاطا كبير": 1.50
+    "قسم الشاورما": {
+        "ساندويش صاج عادي": 1.75,
+        "وجبة سوبر صاج": 3.50,
+        "سدر العيلة الملكي": 18.00
+    },
+    "قسم البرغر": {
+        "كلاسيك برغر لحم": 3.00,
+        "تشيكن برغر زقرت": 2.75,
+        "وجبة برغر دبل": 5.00
+    },
+    "قسم البروستد": {
+        "وجبة بروستد 4 قطع": 4.50,
+        "وجبة بروستد عائلية 8 قطع": 8.50
+    },
+    "المشروبات": {
+        "علبة ماتريكس": 0.50,
+        "عصير برتقال طبيعي": 1.50,
+        "مياه معدنية": 0.25
+    }
 }
 
-# اختيار الفرع (UI/UX)
-branch = st.sidebar.selectbox("📍 اختر الفرع الأقرب إليك:", ["عمان", "إربد", "الزرقاء"])
+# 4. اختيار الطلبات بدقة
+selected_items = {}
+st.sidebar.header("🛒 سلة المشتريات")
 
-# عرض المنيو واختيار الأصناف
-st.subheader("📋 قائمة الطعام")
-order_list = []
-total_bill = 0
+tabs = st.tabs(list(menu.keys()))
+for i, category in enumerate(menu.keys()):
+    with tabs[i]:
+        st.subheader(f"🔥 {category}")
+        cols = st.columns(len(menu[category]))
+        for j, (item, price) in enumerate(menu[category].items()):
+            with cols[j]:
+                st.markdown(f"<div class='menu-card'><b>{item}</b><br>{price} JOD</div>", unsafe_allow_status=True)
+                if st.button(f"أضف {item}", key=item):
+                    selected_items[item] = price
+                    st.toast(f"تم إضافة {item}")
 
-# عمل مربعات اختيار بجانب كل صنف
-for item, price in menu.items():
-    if st.checkbox(f"{item} - {price} JOD"):
-        order_list.append(item)
-        total_bill += price
+# 5. ملخص الطلب والرد الذكي
+total = sum(selected_items.values())
 
-st.markdown("---")
-
-# زر الطلب والرد الذكي
-if st.button("تأكيد الطلب 🚀"):
-    if total_bill > 0:
-        st.success(f"تم استلام طلبك من فرع {branch}!")
+if total > 0:
+    st.sidebar.markdown("---")
+    st.sidebar.write("### طلباتك الحالية:")
+    for itm, prc in selected_items.items():
+        st.sidebar.write(f"- {itm}: {prc} JOD")
+    
+    st.sidebar.write(f"## المجموع: {total:.2f} JOD")
+    
+    if st.sidebar.button(order_btn):
+        st.balloons()
+        st.success("تم إرسال طلبك بنجاح!")
         
-        # الرد الذكي AI
-        if total_bill == max(menu.values()):
-            st.info("🤖 AI: اختيار فخم! السدر الملكي بدو ناس أكيلة، صحتين!")
-        elif total_bill > 15:
-            st.info("🤖 AI: فاتورة دسمة! رح نبعتلك ثومية وبطاطا هدية من المطعم.")
-        else:
-            st.info("🤖 AI: اختيار ممتاز! شاورما ع الصاج دايماً بتبيض الوجه.")
-            
-        st.write("🛒 **سلتك تحتوي على:**", ", ".join(order_list))
-        st.write(f"💰 **المجموع النهائي:** {total_bill:.2f} JOD")
-    else:
-        st.error("الرجاء اختيار صنف واحد على الأقل!")
+        # رد الـ AI المميز
+        if "سدر العيلة الملكي" in selected_items:
+            st.info("🤖 AI: السدر الملكي بدو طاوله قوية! اختيار الملوك، رح نوصي فيك بالثومية!")
+        elif "علبة ماتريكس" in selected_items:
+            st.info("🤖 AI: ماتريكس وبرغر؟ هيك السهرة كملت! صحتين وعافية.")
+        elif total > 10:
+            st.info("🤖 AI: فاتورة دسمة لعيونك! رح نبعتلك عصير برتقال طبيعي ضيافة من المحل.")
