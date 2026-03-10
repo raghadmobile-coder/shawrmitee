@@ -13,51 +13,54 @@ def send_telegram_notification(order_details):
     try: requests.post(url, json=payload)
     except: pass
 
-# --- إعدادات الصفحة الأصلية ---
-st.set_page_config(page_title="الضيعة | مطعم شاورما وبروستد", page_icon="🍖", layout="wide")
+# --- إعدادات الصفحة ---
+st.set_page_config(page_title="مطعم الضيعة | Al-Deera", page_icon="🍖", layout="wide")
 
 if 'page' not in st.session_state: st.session_state.page = 'home'
 if 'cart' not in st.session_state: st.session_state.cart = []
 if 'total' not in st.session_state: st.session_state.total = 0.0
-if 'order_status' not in st.session_state: st.session_state.order_status = None
 
-# --- الستايل الأصلي المطور (الأزرق الملكي) ---
+# --- الستايل المطور (أزرق ملكي بدون صور) ---
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-    * {{ font-family: 'Cairo', sans-serif; direction: rtl; }}
-    .stApp {{ background: #f8f9fa; }}
+    * {{ font-family: 'Cairo', sans-serif; direction: rtl; color: white !important; }}
     
-    /* الهيرو سكشن الأصلي */
-    .hero-container {{
+    .stApp {{
         background: linear-gradient(135deg, #0095F6 0%, #0077B6 100%);
-        padding: 50px; border-radius: 20px; text-align: center; color: white; margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0, 149, 246, 0.2);
+        min-height: 100vh;
     }}
-
-    /* أزرار التنقل زي أول */
-    .nav-btn-container {{ display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }}
     
-    /* كروت المنيو المطورة */
-    .menu-item-card {{
-        background: white; border-radius: 16px; padding: 15px; margin-bottom: 20px;
-        border: 1px solid #E8ECEF; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        transition: 0.3s;
+    /* شريط التنقل العلوي المحسن */
+    .nav-container {{
+        display: flex; justify-content: center; gap: 20px; padding: 15px;
+        background: rgba(255, 255, 255, 0.1); border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 30px;
     }}
-    .menu-item-card:hover {{ transform: translateY(-5px); border-color: #0095F6; }}
     
-    /* زر الواتساب العائم الخاص بك */
+    /* كرت الوجبة الأنيق (بدون صورة) */
+    .item-box {{
+        background: rgba(255, 255, 255, 0.08);
+        padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 15px; transition: 0.3s; text-align: right;
+    }}
+    .item-box:hover {{ background: rgba(255, 255, 255, 0.15); border-color: white; }}
+    
+    .price-tag {{ color: #FFD700 !important; font-weight: bold; font-size: 1.2rem; }}
+    
     .whatsapp-float {{
         position: fixed; width: 60px; height: 60px; bottom: 40px; left: 40px;
         background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center;
-        font-size: 30px; box-shadow: 2px 5px 15px rgba(0,0,0,0.3); z-index: 100;
-        display: flex; align-items: center; justify-content: center; text-decoration: none;
+        box-shadow: 2px 5px 15px rgba(0,0,0,0.3); z-index: 100;
+        display: flex; align-items: center; justify-content: center;
     }}
     
-    .status-msg {{
-        background: #e3f2fd; color: #0d47a1; padding: 15px; border-radius: 12px;
-        border-right: 5px solid #0095F6; margin-bottom: 20px; font-weight: bold;
+    /* سلة المشتريات الجانبية */
+    .cart-section {{
+        background: white !important; padding: 20px; border-radius: 20px;
+        border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }}
+    .cart-section * {{ color: #0077B6 !important; }}
     </style>
     
     <a href="https://wa.me/{MY_WHATSAPP}" class="whatsapp-float" target="_blank">
@@ -65,7 +68,7 @@ st.markdown(f"""
     </a>
 """, unsafe_allow_html=True)
 
-# --- نظام الصفحات الأصلي ---
+# --- الهيدر (Navigation) ---
 col_n1, col_n2, col_n3 = st.columns(3)
 with col_n1:
     if st.button("🏠 الرئيسية", use_container_width=True): st.session_state.page = 'home'; st.rerun()
@@ -76,85 +79,96 @@ with col_n3:
 
 st.divider()
 
-# --- محتوى الصفحات ---
+# --- البيانات المنظمة (بدون صور) ---
+menu_data = {
+    "🌯 قسم الشاورما": [
+        {"n": "ساندويش شاورما عادي", "p": 0.95},
+        {"n": "شاورما سوبر الضيعة", "p": 1.95},
+        {"n": "وجبة عربي صغير", "p": 2.25},
+        {"n": "وجبة عربي دبل", "p": 3.50},
+        {"n": "سدر الضيعة (64 قطعة)", "p": 14.50}
+    ],
+    "🍗 قسم البروستد": [
+        {"n": "وجبة بروستد 4 قطع", "p": 3.25},
+        {"n": "وجبة بروستد 8 قطع", "p": 6.25},
+        {"n": "وليمة بروستد 12 قطعة", "p": 9.95}
+    ],
+    "🍔 قسم البرغر": [
+        {"n": "كلاسيك برغر دجاج", "p": 2.50},
+        {"n": "برغر لحم سوبر", "p": 3.00},
+        {"n": "زنجر برغر حار", "p": 2.75}
+    ],
+    "🍟 المقبلات والمشروبات": [
+        {"n": "صحن بطاطا عائلي", "p": 1.50},
+        {"n": "مثومة / شطة إضافية", "p": 0.25},
+        {"n": "مشروب غازي", "p": 0.50}
+    ]
+}
+
+# --- منطق الصفحات ---
 if st.session_state.page == 'home':
     st.markdown("""
-        <div class='hero-container'>
-            <div style='font-size: 45px; font-weight: 900;'>🍖 مطعم الضيعة 🍖</div>
-            <div style='font-size: 20px; opacity: 0.9;'>طعم أصيل | جودة عالية | أسعار منافسة</div>
+        <div style='text-align: center; padding: 60px 20px;'>
+            <h1 style='font-size: 65px; font-weight: 900; margin-bottom: 10px;'>مطعم الضيعة</h1>
+            <p style='font-size: 24px; opacity: 0.9;'>أشهى وجبات الشاورما والبروستد في الأردن</p>
+            <div style='margin-top: 30px; border: 2px solid white; display: inline-block; padding: 10px 30px; border-radius: 50px;'>
+                📞 0799633096
+            </div>
         </div>
     """, unsafe_allow_html=True)
-    
-    if st.session_state.order_status:
-        st.markdown(f"<div class='status-msg'>📍 حالة طلبك الحالي: {st.session_state.order_status}</div>", unsafe_allow_html=True)
-    
-    st.info("نرحب بكم في مطعم الضيعة، اختر من القائمة بالأعلى لتبدأ الطلب!")
 
 elif st.session_state.page == 'menu':
-    st.markdown("<h2 style='text-align:center; color:#0077B6;'>📋 قائمة الطعام</h2>", unsafe_allow_html=True)
-    
-    # تحديث أصناف المنيو (شاورما وبروستد وبرغر)
-    items_db = {
-        "🌯 قسم الشاورما": [
-            {"n": "شاورما سوبر الضيعة", "p": 1.95, "img": "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=400"},
-            {"n": "وجبة عربي دبل", "p": 3.50, "img": "https://images.unsplash.com/photo-1633383718081-22ac93e3dbf1?w=400"},
-            {"n": "سدر العيلة (64 قطعة)", "p": 14.50, "img": "https://images.unsplash.com/photo-1609501676725-7186f017a4b5?w=400"}
-        ],
-        "🍗 قسم البروستد": [
-            {"n": "وجبة بروستد 4 قطع", "p": 3.25, "img": "https://images.unsplash.com/photo-1626082927389-6cd097cdc45a?w=400"},
-            {"n": "وليمة بروستد 12 قطعة", "p": 9.95, "img": "https://images.unsplash.com/photo-1569058242253-92a9c71f9867?w=400"}
-        ],
-        "🍔 قسم البرغر": [
-            {"n": "كلاسيك برغر دجاج", "p": 2.50, "img": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=400"},
-            {"n": "برغر لحم سوبر", "p": 3.00, "img": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400"}
-        ]
-    }
-
     m_col, c_col = st.columns([2.5, 1])
     
     with m_col:
-        for cat, items in items_db.items():
-            st.markdown(f"### {cat}")
-            cols = st.columns(2)
-            for idx, item in enumerate(items):
-                with cols[idx % 2]:
+        # عرض القوائم بشكل منفصل
+        for cat, items in menu_data.items():
+            st.markdown(f"### ✨ {cat}")
+            for item in items:
+                col_item, col_btn = st.columns([4, 1])
+                with col_item:
                     st.markdown(f"""
-                        <div class='menu-item-card'>
-                            <img src='{item['img']}' style='width:100%; border-radius:12px; height:150px; object-fit:cover;'>
-                            <h4 style='color:#0077B6; margin-top:10px;'>{item['n']}</h4>
-                            <p style='font-weight:bold; color:#0095F6;'>السعر: {item['p']:.2f} د.أ</p>
+                        <div class="item-box">
+                            <span style="font-size: 1.3rem; font-weight: bold;">{item['n']}</span><br>
+                            <span class="price-tag">{item['p']:.2f} JOD</span>
                         </div>
                     """, unsafe_allow_html=True)
-                    if st.button(f"أضف {item['n']}", key=f"add_{item['n']}"):
+                with col_btn:
+                    st.write("") # موازنة المسافة
+                    if st.button("➕", key=f"add_{item['n']}", use_container_width=True):
                         st.session_state.cart.append(item)
                         st.session_state.total += item['p']
                         st.rerun()
 
     with c_col:
-        st.markdown("<div style='background:white; padding:20px; border-radius:15px; border:2px solid #0095F6;'>", unsafe_allow_html=True)
-        st.subheader("🛒 سلتك")
+        st.markdown("<div class='cart-section'>", unsafe_allow_html=True)
+        st.subheader("🛒 طلباتك")
         if not st.session_state.cart:
-            st.write("السلة فارغة")
+            st.write("ابدأ بإضافة الوجبات")
         else:
-            for i, item in enumerate(st.session_state.cart):
-                st.write(f"• {item['n']} ({item['p']:.2f} د.أ)")
-            st.markdown(f"**💰 المجموع: {st.session_state.total:.2f} د.أ**")
+            for item in st.session_state.cart:
+                st.write(f"• {item['n']} ({item['p']:.2f})")
+            st.markdown(f"**💰 المجموع: {st.session_state.total:.2f} JOD**")
             
             u_name = st.text_input("الأسم")
-            u_phone = st.text_input("رقم الموبايل")
-            u_loc = st.text_input("موقع التوصيل (رابط)")
+            u_phone = st.text_input("رقم الهاتف")
             
-            if st.button("🚀 إرسال الطلب الآن", use_container_width=True):
+            if st.button("إرسال الطلب (تليجرام)", use_container_width=True):
                 if u_name and u_phone:
-                    order_text = "\n".join([f"- {x['n']}" for x in st.session_state.cart])
-                    full_msg = f"🔔 طلب جديد!\nالاسم: {u_name}\nالهاتف: {u_phone}\nالطلبات:\n{order_text}\nالمجموع: {st.session_state.total:.2f}"
-                    send_telegram_notification(full_msg)
-                    st.session_state.order_status = "جاري تحضير طلبك الساخن.. 🔥"
-                    st.success("تم الإرسال!")
+                    items_list = "\n".join([f"- {i['n']}" for i in st.session_state.cart])
+                    msg = f"📦 طلب جديد!\nالاسم: {u_name}\nالهاتف: {u_phone}\nالطلبات:\n{items_list}\nالمجموع: {st.session_state.total:.2f}"
+                    send_telegram_notification(msg)
+                    st.success("وصل الطلب!")
                     st.session_state.cart = []; st.session_state.total = 0.0
-                    time.sleep(2); st.session_state.page = 'home'; st.rerun()
+                    time.sleep(1); st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
 elif st.session_state.page == 'contact':
-    st.markdown("<h2 style='text-align:center;'>📧 تواصل معنا</h2>", unsafe_allow_html=True)
-    st.info(f"يمكنك التواصل معنا مباشرة عبر الهاتف: 0799633096 أو عبر الواتساب بالضغط على الزر الأخضر بالأسفل.")
+    st.markdown("""
+        <div style='text-align: center; padding: 40px;'>
+            <h2>تواصل معنا مباشرة</h2>
+            <p>نحن جاهزون لخدمتكم دائماً</p>
+            <h1 style='color: #FFD700 !important;'>0799633096</h1>
+            <p>📍 الموقع: عمّان - الأردن</p>
+        </div>
+    """, unsafe_allow_html=True)
