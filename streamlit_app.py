@@ -36,35 +36,58 @@ st.markdown("""
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    .stApp { 
-        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    .stApp {
+        background: linear-gradient(180deg, #f8f9fb 0%, #f0f4f8 50%, #e8f0f7 100%);
         color: #262626;
         font-family: 'Cairo', sans-serif;
+        min-height: 100vh;
     }
-    
+
     /* Hero Section */
     .hero-container {
-        background: linear-gradient(135deg, #0095F6 0%, #0077B6 100%);
-        padding: 60px 40px;
-        border-radius: 20px;
+        background: linear-gradient(135deg, #0095F6 0%, #0077B6 50%, #005a99 100%);
+        padding: 80px 40px;
+        border-radius: 24px;
         text-align: center;
         color: white;
-        margin-bottom: 40px;
-        box-shadow: 0 10px 40px rgba(0, 149, 246, 0.2);
+        margin-bottom: 50px;
+        box-shadow: 0 15px 50px rgba(0, 149, 246, 0.25), 0 0 40px rgba(0, 119, 182, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .hero-container > * {
+        position: relative;
+        z-index: 1;
     }
     
     .hero-title {
-        font-size: 48px;
+        font-size: 56px;
         font-weight: 900;
-        margin-bottom: 15px;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .hero-subtitle {
-        font-size: 20px;
-        font-weight: 400;
-        opacity: 0.95;
         margin-bottom: 20px;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+        font-size: 22px;
+        font-weight: 500;
+        opacity: 0.98;
+        margin-bottom: 15px;
+        line-height: 1.6;
+        letter-spacing: 0.5px;
     }
     
     /* Navigation */
@@ -293,51 +316,107 @@ st.markdown("""
     
     /* Info Sections */
     .info-section {
-        background: white;
-        border-radius: 16px;
-        padding: 40px;
-        margin-bottom: 30px;
-        border: 1px solid #E8ECEF;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbfe 100%);
+        border-radius: 20px;
+        padding: 50px 45px;
+        margin-bottom: 40px;
+        border: 1px solid #e0e9f0;
+        box-shadow: 0 5px 20px rgba(0, 119, 182, 0.08), 0 0 30px rgba(0, 149, 246, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-section::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(0, 149, 246, 0.05), transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .info-section::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: -80px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(0, 149, 246, 0.04), transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .info-section > * {
+        position: relative;
+        z-index: 1;
     }
     
     .section-title {
-        font-size: 28px;
+        font-size: 32px;
         font-weight: 900;
         color: #0077B6;
-        margin-bottom: 25px;
+        margin-bottom: 35px;
         text-align: right;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #0095F6;
+        display: inline-block;
     }
     
     /* Testimonials */
     .testimonial-card {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 15px;
-        border: 1px solid #E8ECEF;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbfe 100%);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 20px;
+        border: 2px solid #e0e9f0;
+        box-shadow: 0 4px 15px rgba(0, 119, 182, 0.08);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
-    
+
+    .testimonial-card::before {
+        content: '❝';
+        position: absolute;
+        top: -25px;
+        right: 20px;
+        font-size: 80px;
+        color: rgba(0, 149, 246, 0.1);
+        line-height: 1;
+    }
+
+    .testimonial-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 149, 246, 0.15);
+        border-color: #0095F6;
+        transform: translateY(-4px);
+    }
+
     .testimonial-text {
         color: #262626;
-        font-size: 16px;
-        margin-bottom: 10px;
+        font-size: 17px;
+        margin-bottom: 15px;
         text-align: right;
-        line-height: 1.6;
+        line-height: 1.8;
+        font-weight: 500;
+        font-style: italic;
     }
-    
+
     .testimonial-author {
         color: #0095F6;
-        font-weight: 700;
+        font-weight: 800;
         text-align: right;
-        font-size: 14px;
+        font-size: 15px;
     }
-    
+
     .testimonial-rating {
         color: #FFC107;
-        font-size: 14px;
-        margin-bottom: 10px;
+        font-size: 15px;
+        margin-bottom: 15px;
+        letter-spacing: 2px;
     }
     
     /* Contact Section */
@@ -349,31 +428,136 @@ st.markdown("""
     }
     
     .contact-item {
-        background: linear-gradient(135deg, #0095F6 0%, #0077B6 100%);
+        background: linear-gradient(135deg, #0095F6 0%, #0077B6 50%, #005a99 100%);
         color: white;
-        padding: 30px;
-        border-radius: 12px;
+        padding: 40px 35px;
+        border-radius: 16px;
         text-align: center;
+        box-shadow: 0 8px 25px rgba(0, 119, 182, 0.2);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
-    
+
+    .contact-item::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+        border-radius: 50%;
+    }
+
+    .contact-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0, 119, 182, 0.3);
+    }
+
     .contact-label {
-        font-size: 14px;
-        opacity: 0.9;
-        margin-bottom: 10px;
+        font-size: 15px;
+        opacity: 0.92;
+        margin-bottom: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
     }
-    
+
     .contact-value {
-        font-size: 20px;
+        font-size: 24px;
         font-weight: 900;
+        position: relative;
+        z-index: 2;
     }
     
     /* Responsive */
+    @media (max-width: 1024px) {
+        .hero-container {
+            padding: 60px 30px;
+        }
+        .hero-title {
+            font-size: 48px;
+        }
+        .info-section {
+            padding: 40px 35px;
+        }
+    }
+
     @media (max-width: 768px) {
-        .hero-title { font-size: 32px; }
-        .hero-subtitle { font-size: 16px; }
-        .category-grid { grid-template-columns: 1fr; }
-        .category-title { font-size: 24px; }
-        .cart-container { position: relative; top: 0; }
+        .stApp {
+            background: linear-gradient(180deg, #f8f9fb 0%, #e8f0f7 100%);
+        }
+        .hero-container {
+            padding: 50px 25px;
+            margin-bottom: 30px;
+            border-radius: 16px;
+        }
+        .hero-title {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+        }
+        .category-grid {
+            grid-template-columns: 1fr;
+        }
+        .category-title {
+            font-size: 24px;
+        }
+        .cart-container {
+            position: relative;
+            top: 0;
+            margin-top: 30px;
+        }
+        .info-section {
+            padding: 30px 20px;
+            margin-bottom: 25px;
+            border-radius: 16px;
+        }
+        .info-section::before {
+            top: -150px;
+            right: -150px;
+            width: 250px;
+            height: 250px;
+        }
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+        .contact-item {
+            padding: 30px 20px;
+        }
+        .testimonial-card {
+            padding: 25px;
+            margin-bottom: 15px;
+        }
+        .section-title {
+            font-size: 24px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-container {
+            padding: 40px 15px;
+        }
+        .hero-title {
+            font-size: 32px;
+        }
+        .hero-subtitle {
+            font-size: 16px;
+        }
+        .info-section {
+            padding: 25px 15px;
+        }
+        .contact-item {
+            padding: 25px 15px;
+        }
+        .testimonial-card {
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 20px;
+        }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -568,81 +752,138 @@ if st.session_state.page == 'home':
     st.markdown("""
         <div class='hero-container'>
             <div class='hero-title'>🍖 مطعم الضيعة 🍖</div>
-            <div class='hero-subtitle'>طعم أصيل | جودة عالية | أسعار منافسة</div>
-            <div class='hero-subtitle' style='font-size: 18px; opacity: 0.9;'>
-                🏪 الفروع | 📞 079-0000000 | ⏰ من 10 صباح لـ 2 صباح
+            <div class='hero-subtitle'>الطعم الأصيل | الجودة العالية | الأسعار المنافسة</div>
+            <div style='margin-top: 30px; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;'>
+                <div style='color: white; text-align: center;'>
+                    <div style='font-size: 28px; margin-bottom: 8px;'>🏪</div>
+                    <div style='font-size: 16px; font-weight: 600;'>الفروع المتعددة</div>
+                </div>
+                <div style='color: white; text-align: center;'>
+                    <div style='font-size: 28px; margin-bottom: 8px;'>📞</div>
+                    <div style='font-size: 16px; font-weight: 600;'>079-0000000</div>
+                </div>
+                <div style='color: white; text-align: center;'>
+                    <div style='font-size: 28px; margin-bottom: 8px;'>⏰</div>
+                    <div style='font-size: 16px; font-weight: 600;'>10 صباح - 2 صباح</div>
+                </div>
             </div>
         </div>
     """, unsafe_allow_html=True)
-    
+
     # Info Section
     st.markdown("""
         <div class='info-section'>
             <div class='section-title'>🌟 عن مطعم الضيعة</div>
-            <p style='font-size: 18px; line-height: 1.8; color: #262626; text-align: right;'>
-                في مطعم الضيعة، نقدم لك أفضل الشاورما والبروستد والبرغرات بجودة عالية وأسعار منافسة. 
-                كل وجبة تُحضّر بحب واهتمام باستخدام أطيب المكونات. فريقنا مدرب على أعلى مستويات الخدمة 
-                لنضمن لك تجربة طعام لا تنسى.
-            </p>
-            <p style='font-size: 18px; line-height: 1.8; color: #262626; text-align: right; margin-top: 20px;'>
-                ⏰ مفتوح: 10 صباح - 2 صباح | 📍 فروع متعددة | 🚚 توصيل سريع
-            </p>
+            <div style='margin-top: 30px;'>
+                <p style='font-size: 18px; line-height: 2; color: #333333; text-align: right; margin-bottom: 25px;'>
+                    🎯 في <strong style="color: #0077B6;">مطعم الضيعة</strong> نؤمن أن الطعم الأصيل والجودة العالية هما أساس رضاك.
+                    نقدم لك أفضل الشاورما والبروستد والبرغرات المحضّرة بحب وعناية من قبل فريق محترف مجرّب.
+                </p>
+                <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;'>
+                    <div style='background: linear-gradient(135deg, rgba(0,149,246,0.08) 0%, rgba(0,119,182,0.08) 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #0095F6; text-align: right;'>
+                        <div style='color: #0077B6; font-weight: 800; font-size: 18px; margin-bottom: 8px;'>✨ المكونات الطازجة</div>
+                        <div style='color: #666; font-size: 15px;'>أطيب المكونات يومياً</div>
+                    </div>
+                    <div style='background: linear-gradient(135deg, rgba(0,149,246,0.08) 0%, rgba(0,119,182,0.08) 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #0095F6; text-align: right;'>
+                        <div style='color: #0077B6; font-weight: 800; font-size: 18px; margin-bottom: 8px;'>⚡ التحضير السريع</div>
+                        <div style='color: #666; font-size: 15px;'>طعامك جاهز بسرعة</div>
+                    </div>
+                    <div style='background: linear-gradient(135deg, rgba(0,149,246,0.08) 0%, rgba(0,119,182,0.08) 100%); padding: 20px; border-radius: 12px; border-left: 4px solid #0095F6; text-align: right;'>
+                        <div style='color: #0077B6; font-weight: 800; font-size: 18px; margin-bottom: 8px;'>🚚 التوصيل الموثوق</div>
+                        <div style='color: #666; font-size: 15px;'>لباب بيتك بأمان</div>
+                    </div>
+                </div>
+                <p style='font-size: 17px; line-height: 1.9; color: #555; text-align: right; margin-top: 20px;'>
+                    فريقنا متخصص في تقديم خدمة عملاء ممتازة وضمان رضاك الكامل. كل وجبة تُحضّر بعناية
+                    فائقة لنضمن لك تجربة طعام فريدة لن تنساها.
+                </p>
+            </div>
         </div>
     """, unsafe_allow_html=True)
     
     # Menu Preview
     st.markdown("""
         <div class='info-section'>
-            <div class='section-title'>📋 أقسام القائمة</div>
+            <div class='section-title'>📋 استكشف القائمة</div>
         </div>
     """, unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns(3)
+
+    col1, col2, col3 = st.columns(3, gap="medium")
+
     with col1:
         st.markdown("""
-            <div style='background: linear-gradient(135deg, #0095F6 0%, #0077B6 100%); color: white; padding: 30px; border-radius: 12px; text-align: center;'>
-                <div style='font-size: 40px; margin-bottom: 10px;'>🌯</div>
-                <div style='font-size: 20px; font-weight: 900;'>شاورما</div>
-                <div style='font-size: 14px; opacity: 0.9; margin-top: 10px;'>أحجام مختلفة</div>
+            <div style='background: linear-gradient(135deg, #0095F6 0%, #0077B6 50%, #005a99 100%);
+                        color: white; padding: 40px 30px; border-radius: 16px; text-align: center;
+                        box-shadow: 0 8px 25px rgba(0,119,182,0.2); transition: all 0.3s ease;
+                        position: relative; overflow: hidden;'>
+                <div style='position: absolute; top: -50px; right: -50px; width: 180px; height: 180px;
+                            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+                            border-radius: 50%;'></div>
+                <div style='position: relative; z-index: 1;'>
+                    <div style='font-size: 50px; margin-bottom: 15px;'>🌯</div>
+                    <div style='font-size: 24px; font-weight: 900; margin-bottom: 8px;'>شاورما</div>
+                    <div style='font-size: 15px; opacity: 0.95; line-height: 1.5;'>أحجام متنوعة<br>من العادي للعملاق</div>
+                </div>
             </div>
         """, unsafe_allow_html=True)
-    
+
     with col2:
         st.markdown("""
-            <div style='background: linear-gradient(135deg, #0095F6 0%, #0077B6 100%); color: white; padding: 30px; border-radius: 12px; text-align: center;'>
-                <div style='font-size: 40px; margin-bottom: 10px;'>🍔</div>
-                <div style='font-size: 20px; font-weight: 900;'>برغرات</div>
-                <div style='font-size: 14px; opacity: 0.9; margin-top: 10px;'>لحم وبدجاج</div>
+            <div style='background: linear-gradient(135deg, #0095F6 0%, #0077B6 50%, #005a99 100%);
+                        color: white; padding: 40px 30px; border-radius: 16px; text-align: center;
+                        box-shadow: 0 8px 25px rgba(0,119,182,0.2); transition: all 0.3s ease;
+                        position: relative; overflow: hidden;'>
+                <div style='position: absolute; top: -50px; right: -50px; width: 180px; height: 180px;
+                            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+                            border-radius: 50%;'></div>
+                <div style='position: relative; z-index: 1;'>
+                    <div style='font-size: 50px; margin-bottom: 15px;'>🍔</div>
+                    <div style='font-size: 24px; font-weight: 900; margin-bottom: 8px;'>برغرات</div>
+                    <div style='font-size: 15px; opacity: 0.95; line-height: 1.5;'>لحم بقري وفيليه<br>دجاج طازج يومي</div>
+                </div>
             </div>
         """, unsafe_allow_html=True)
-    
+
     with col3:
         st.markdown("""
-            <div style='background: linear-gradient(135deg, #0095F6 0%, #0077B6 100%); color: white; padding: 30px; border-radius: 12px; text-align: center;'>
-                <div style='font-size: 40px; margin-bottom: 10px;'>🍗</div>
-                <div style='font-size: 20px; font-weight: 900;'>بروستد</div>
-                <div style='font-size: 14px; opacity: 0.9; margin-top: 10px;'>مقرمش وطازج</div>
+            <div style='background: linear-gradient(135deg, #0095F6 0%, #0077B6 50%, #005a99 100%);
+                        color: white; padding: 40px 30px; border-radius: 16px; text-align: center;
+                        box-shadow: 0 8px 25px rgba(0,119,182,0.2); transition: all 0.3s ease;
+                        position: relative; overflow: hidden;'>
+                <div style='position: absolute; top: -50px; right: -50px; width: 180px; height: 180px;
+                            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+                            border-radius: 50%;'></div>
+                <div style='position: relative; z-index: 1;'>
+                    <div style='font-size: 50px; margin-bottom: 15px;'>🍗</div>
+                    <div style='font-size: 24px; font-weight: 900; margin-bottom: 8px;'>بروستد</div>
+                    <div style='font-size: 15px; opacity: 0.95; line-height: 1.5;'>مقرمش وطازج<br>نسب مثالية</div>
+                </div>
             </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
     
     # Testimonials
     st.markdown("""
         <div class='info-section'>
-            <div class='section-title'>⭐ آراء الزبائن</div>
+            <div class='section-title'>⭐ ما يقول عملاؤنا</div>
         </div>
     """, unsafe_allow_html=True)
-    
-    for testimonial in testimonials:
-        st.markdown(f"""
-            <div class='testimonial-card'>
-                <div class='testimonial-rating'>{testimonial['rating']}</div>
-                <div class='testimonial-text'>"{testimonial['text']}"</div>
-                <div class='testimonial-author'>— {testimonial['name']}</div>
-            </div>
-        """, unsafe_allow_html=True)
-    
+
+    # Display testimonials in a grid
+    test_cols = st.columns(2)
+    for idx, testimonial in enumerate(testimonials):
+        with test_cols[idx % 2]:
+            st.markdown(f"""
+                <div class='testimonial-card'>
+                    <div class='testimonial-rating'>{testimonial['rating']}</div>
+                    <div class='testimonial-text'>"{testimonial['text']}"</div>
+                    <div style='margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e9f0;'>
+                        <div class='testimonial-author'>{testimonial['name']}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Contact
@@ -651,48 +892,95 @@ if st.session_state.page == 'home':
             <div class='section-title'>📞 تواصل معنا</div>
             <div class='contact-grid'>
                 <div class='contact-item'>
-                    <div class='contact-label'>📱 الهاتف</div>
+                    <div class='contact-label'>☎️ الهاتف</div>
                     <div class='contact-value'>079-0000000</div>
                 </div>
                 <div class='contact-item'>
-                    <div class='contact-label'>📍 الموقع</div>
-                    <div class='contact-value'>عمّان</div>
+                    <div class='contact-label'>📍 عنواننا</div>
+                    <div class='contact-value'>عمّان - الأردن</div>
                 </div>
                 <div class='contact-item'>
-                    <div class='contact-label'>⏰ الأوقات</div>
+                    <div class='contact-label'>⏰ ساعات العمل</div>
                     <div class='contact-value'>10 صباح - 2 صباح</div>
                 </div>
             </div>
         </div>
     """, unsafe_allow_html=True)
-    
+
     # Social Media
     st.markdown("""
         <div class='info-section' style='text-align: center;'>
-            <div class='section-title' style='text-align: center;'>تابعنا على وسائل التواصل</div>
-            <div style='display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;'>
+            <div class='section-title' style='text-align: center; margin-bottom: 35px;'>تابعنا على الوسائط الاجتماعية</div>
+            <div style='display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 30px;'>
                 <a href='https://www.instagram.com/dayaarestaurant/?hl=ar' target='_blank' style='text-decoration: none;'>
-                    <div style='background: #E1306C; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 700;'>📸 Instagram</div>
+                    <div style='background: linear-gradient(135deg, #E1306C 0%, #C13584 100%); color: white; padding: 18px 35px;
+                                border-radius: 12px; font-weight: 800; font-size: 16px;
+                                box-shadow: 0 6px 20px rgba(225, 48, 108, 0.3);
+                                transition: all 0.3s ease;'
+                         onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 10px 30px rgba(225, 48, 108, 0.4)';"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 20px rgba(225, 48, 108, 0.3)';">
+                        📸 Instagram
+                    </div>
                 </a>
                 <a href='https://wa.me/962790000000' target='_blank' style='text-decoration: none;'>
-                    <div style='background: #25D366; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 700;'>💬 WhatsApp</div>
+                    <div style='background: linear-gradient(135deg, #25D366 0%, #20AA5F 100%); color: white; padding: 18px 35px;
+                                border-radius: 12px; font-weight: 800; font-size: 16px;
+                                box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+                                transition: all 0.3s ease;'
+                         onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 10px 30px rgba(37, 211, 102, 0.4)';"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 20px rgba(37, 211, 102, 0.3)';">
+                        💬 WhatsApp
+                    </div>
                 </a>
                 <a href='tel:+962790000000' style='text-decoration: none;'>
-                    <div style='background: #0095F6; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 700;'>📞 اتصل بنا</div>
+                    <div style='background: linear-gradient(135deg, #0095F6 0%, #0077B6 100%); color: white; padding: 18px 35px;
+                                border-radius: 12px; font-weight: 800; font-size: 16px;
+                                box-shadow: 0 6px 20px rgba(0, 149, 246, 0.3);
+                                transition: all 0.3s ease;'
+                         onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 10px 30px rgba(0, 149, 246, 0.4)';"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 20px rgba(0, 149, 246, 0.3)';">
+                        📞 اتصل بنا
+                    </div>
                 </a>
             </div>
         </div>
     """, unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
-    
+
+    # CTA Section
+    st.markdown("""
+        <div style='background: linear-gradient(135deg, #0095F6 0%, #0077B6 50%, #005a99 100%);
+                    padding: 60px 40px;
+                    border-radius: 20px;
+                    text-align: center;
+                    color: white;
+                    box-shadow: 0 15px 50px rgba(0, 149, 246, 0.25);
+                    margin: 40px 0;
+                    position: relative;
+                    overflow: hidden;'>
+            <div style='position: absolute; top: -100px; right: -100px; width: 300px; height: 300px;
+                        background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+                        border-radius: 50%;'></div>
+            <div style='position: absolute; bottom: -80px; left: -80px; width: 250px; height: 250px;
+                        background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%);
+                        border-radius: 50%;'></div>
+            <div style='position: relative; z-index: 1;'>
+                <div style='font-size: 28px; font-weight: 900; margin-bottom: 20px;'>استعد لتجربة طعام لا تنسى</div>
+                <div style='font-size: 18px; margin-bottom: 30px; opacity: 0.95;'>
+                    اختر من قائمتنا المتنوعة واستمتع بأفضل الأطباق
+                </div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
     # CTA Button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("🛒 اطلب الآن", use_container_width=True, key="cta_order"):
             st.session_state.page = 'menu'
             st.rerun()
-    
+
     st.markdown("<br>", unsafe_allow_html=True)
 
 # --- صفحة المنيو ---
