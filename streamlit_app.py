@@ -1,148 +1,164 @@
 import streamlit as st
 
 # 1. إعدادات الصفحة
-st.set_page_config(page_title="Shawarma Al-Saj | شاورما ع الصاج", page_icon="🌯", layout="wide")
+st.set_page_config(page_title="Shawarma Al-Saj | الفخامة الملكية", page_icon="🌯", layout="wide")
 
-# 2. نظام إدارة "الحالة" (للانتقال من الترحيب للمنيو)
+# 2. إدارة الحالة (الترحيب ثم المنيو)
 if 'page' not in st.session_state:
     st.session_state.page = 'welcome'
 if 'lang' not in st.session_state:
     st.session_state.lang = None
 
-# --- CSS للتصميم الـ 3D والخلفية المتحركة ---
+# --- CSS التصميم الاحترافي 4K ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
     
     .stApp {
-        background: radial-gradient(circle at center, #4b0000 0%, #000000 100%);
+        background: radial-gradient(circle at center, #2d0000 0%, #000000 100%);
         color: white;
         font-family: 'Cairo', sans-serif;
     }
 
-    /* تصميم بوابة الترحيب */
+    /* بوابة الترحيب */
     .welcome-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 80vh;
+        height: 70vh;
         text-align: center;
     }
 
     .shimmer-title {
-        font-size: 100px;
+        font-size: clamp(40px, 8vw, 100px);
         font-weight: 900;
-        color: rgba(255, 255, 255, 0.1);
-        background: linear-gradient(to right, #ff4b4b 0, white 10%, #ff4b4b 20%);
-        background-position: 0;
+        background: linear-gradient(to right, #ff4b4b 20%, #ffffff 50%, #ff4b4b 80%);
+        background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: shimmer 3s infinite linear;
-        animation-fill-mode: forwards;
-        text-shadow: 0 0 30px rgba(255, 75, 75, 0.5);
+        animation: shine 3s linear infinite;
+        text-shadow: 0 0 20px rgba(255, 75, 75, 0.3);
     }
 
-    @keyframes shimmer {
-        0% { background-position: -500px; }
-        100% { background-position: 500px; }
+    @keyframes shine {
+        to { background-position: 200% center; }
     }
 
-    .glass-btn {
-        background: rgba(255, 75, 75, 0.2);
-        border: 2px solid #ff4b4b;
-        padding: 15px 40px;
-        border-radius: 50px;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-        transition: 0.4s;
-        backdrop-filter: blur(10px);
-        margin: 10px;
+    /* كرت السدر الملكي (تصميم خاص) */
+    .royal-card {
+        background: rgba(30, 0, 0, 0.7);
+        border: 3px solid #ff4b4b;
+        border-radius: 40px;
+        overflow: hidden;
+        margin: 40px auto;
+        max-width: 1000px;
+        box-shadow: 0 0 50px rgba(255, 75, 75, 0.2);
+    }
+    .royal-img {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        border-bottom: 5px solid #ff4b4b;
     }
 
-    /* كروت المنيو الاحترافية */
+    /* كروت المنيو العادية */
     .menu-card {
-        background: rgba(20, 20, 20, 0.85);
-        border: 1px solid #ff4b4b;
+        background: rgba(20, 20, 20, 0.9);
+        border: 1px solid rgba(255, 75, 75, 0.4);
         border-radius: 25px;
         overflow: hidden;
-        transition: 0.5s;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+        transition: 0.4s;
+        height: 100%;
     }
-    .menu-card:hover { transform: scale(1.05) rotate(1deg); border-color: white; }
-    .item-img { width: 100%; height: 280px; object-fit: cover; }
-    .card-body { padding: 20px; text-align: center; }
-    .price-tag { color: #ff4b4b; font-size: 24px; font-weight: bold; }
+    .menu-card:hover {
+        transform: translateY(-10px);
+        border-color: #ff4b4b;
+    }
+    .item-img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+    .card-body { padding: 25px; text-align: center; }
+    .price-tag { 
+        color: #ff4b4b; 
+        font-size: 28px; 
+        font-weight: bold; 
+        background: rgba(255, 75, 75, 0.1);
+        padding: 5px 20px;
+        border-radius: 50px;
+        display: inline-block;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- الصفحة الأولى: بوابة الدخول ---
+# --- بوابة الترحيب واختيار اللغة ---
 if st.session_state.page == 'welcome':
     st.markdown("""
         <div class="welcome-container">
             <h1 class="shimmer-title">SHAWARMA AL-SAJ</h1>
-            <h2 style="color: #ccc; letter-spacing: 5px;">شاورما ع الصاج</h2>
-            <p style="font-size: 20px; margin-top: 20px;">Choose Your Language | اختر لغتك</p>
+            <p style="font-size: 24px; color: #ddd; letter-spacing: 2px;">مرحباً بك في عالم المذاق الأصيل</p>
         </div>
     """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("العربية 🇯🇴", use_container_width=True):
-            st.session_state.lang = 'Ar'
-            st.session_state.page = 'menu'
-            st.rerun()
-    with col2:
-        if st.button("English 🇺🇸", use_container_width=True):
-            st.session_state.lang = 'En'
-            st.session_state.page = 'menu'
-            st.rerun()
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("القائمة العربية 🇯🇴", use_container_width=True):
+            st.session_state.lang = 'Ar'; st.session_state.page = 'menu'; st.rerun()
+    with c2:
+        if st.button("English Menu 🇺🇸", use_container_width=True):
+            st.session_state.lang = 'En'; st.session_state.page = 'menu'; st.rerun()
 
-# --- الصفحة الثانية: المنيو العملاق ---
+# --- صفحة المنيو ---
 elif st.session_state.page == 'menu':
-    if st.session_state.lang == 'Ar':
-        title, sub = "القائمة الملكية 👑", "نقدم لك أفضل جودة في المملكة"
-        cats = ["🌟 العروض الملكية", "🌯 الشاورما", "🥩 برغر اللحم", "🍗 برغر الدجاج", "🥤 المشروبات"]
-    else:
-        title, sub = "Royal Menu 👑", "The Best Quality in Jordan"
-        cats = ["🌟 Royal Offers", "🌯 Shawarma", "🥩 Beef Burgers", "🍗 Chicken Burgers", "🥤 Drinks"]
+    lang = st.session_state.lang
+    
+    # محتوى السدر الملكي (الصورة والوصف)
+    royal_title = "سدر العيلة الإمبراطوري 👑" if lang == 'Ar' else "Imperial Family Tray 👑"
+    # رابط صورة سدر احترافي جداً (شاورما عربي مرتبة)
+    royal_img_url = "https://images.unsplash.com/photo-1561651823-34feb02250e4?q=80&w=1200" # صورة شاورما عربي دقيقة
+    royal_desc = (
+        "سدر ملكي ضخم يحتوي على 60 قطعة شاورما دجاج (صافي)، "
+        "بطاطا عائلية كريسبي، 4 أنواع ثومية (عادية، حارة، مدخنة، كاري)، "
+        "مخللات بيتية، ولتر ونصف كولا." 
+        if lang == 'Ar' else 
+        "Huge tray with 60 pcs of Shawarma, family fries, 4 types of garlic dip, pickles, and 1.5L Coke."
+    )
 
-    st.markdown(f"<h1 style='text-align:center; color:#ff4b4b;'>{title}</h1>", unsafe_allow_html=True)
-    st.markdown(f"<p style='text-align:center; color:#ccc;'>{sub}</p>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='text-align:center; font-size:50px;'>{royal_title}</h1>", unsafe_allow_html=True)
 
-    # بيانات المنيو مع أعلى دقة صور
-    menu_data = {
-        cats[0]: [("سدر العيلة الملكي VIP", 18.50, "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?q=90&w=1200", "48 قطعة، ثومية، بطاطا عائلية، لتر ونصف كولا")],
-        cats[1]: [("وجبة سوبر صاج", 3.75, "https://images.unsplash.com/photo-1662145031215-9898246d60a5?q=90&w=1000", "خبز صاج، ثومية، مخلل، دجاج بلدي")],
-        cats[2]: [("أنغوس تشيز ماستر", 4.75, "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=90&w=1000", "180غم لحم أنغوس، جبنة شيدر، خبز بريوش")],
-        cats[3]: [("زنجر سوبريم جلاكسي", 3.95, "https://images.unsplash.com/photo-1610614819513-58e34989848b?q=90&w=1000", "صدر دجاج كريسبي، تركي مدخن، صوص سبيشال")],
-        cats[4]: [("ماتريكس كولا", 0.60, "https://images.unsplash.com/photo-1527960471264-932f39eb5846?q=90&w=1000", "بارد ومنعش")]
-    }
+    # عرض السدر الملكي بكرت ضخم
+    st.markdown(f"""
+        <div class="royal-card">
+            <img src="{royal_img_url}" class="royal-img">
+            <div class="card-body">
+                <p style="font-size: 22px; color: #ddd; line-height: 1.8;">{royal_desc}</p>
+                <div class="price-tag">18.50 JOD</div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    if st.button("🔥 اطلب السدر الملكي الآن / Order Now", use_container_width=True):
+        st.balloons()
+        st.toast("✅ تم إضافة طلب الملوك")
 
-    tabs = st.tabs(cats)
-    for i, cat in enumerate(cats):
-        with tabs[i]:
-            cols = st.columns(2 if len(menu_data[cat]) > 1 else 1)
-            for idx, item in enumerate(menu_data[cat]):
-                with cols[idx % 2]:
-                    st.markdown(f"""
-                        <div class="menu-card">
-                            <img src="{item[2]}" class="item-img">
-                            <div class="card-body">
-                                <h3>{item[0]}</h3>
-                                <p style="color:#bbb;">{item[3]}</p>
-                                <div class="price-tag">{item[1]:.2f} JOD</div>
-                            </div>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    if st.button(f"أضف {item[0]}", key=item[0]):
-                        st.toast(f"✅ Added {item[0]}")
+    # باقي المنيو (أقسام مرنة)
+    st.markdown("---")
+    tabs = st.tabs(["🌯 الوجبات", "🍔 البرغر", "🍗 البروستد", "🥤 المشروبات"])
+    
+    with tabs[0]: # الشاورما
+        col1, col2 = st.columns(2)
+        items = [
+            ("وجبة دبل صاج", 5.50, "https://images.unsplash.com/photo-1633383718081-22ac93e3dbf1?w=800", "2 ساندويش صاج ضخم + بطاطا + مشروب"),
+            ("وجبة سوبر كلاسيك", 3.75, "https://images.unsplash.com/photo-1644704078230-07e750f78937?w=800", "ساندويش صاج مقطع + ثومية ومخلل")
+        ]
+        for i, (name, price, img, dsc) in enumerate(items):
+            with [col1, col2][i]:
+                st.markdown(f"""<div class="menu-card"><img src="{img}" class="item-img"><div class="card-body"><h3>{name}</h3><p>{dsc}</p><div class="price-tag">{price:.2f} JOD</div></div></div>""", unsafe_allow_html=True)
+                st.button(f"أضف {name}", key=name)
 
-    if st.button("⬅️ Back to Language | العودة للغة"):
-        st.session_state.page = 'welcome'
-        st.rerun()
+    if st.button("⬅️ تغيير اللغة / Change Language"):
+        st.session_state.page = 'welcome'; st.rerun()
 
 # --- الفوتر ---
-st.markdown("---")
-st.write("📍 Amman, Jordan | 📞 079-0000000")
+st.markdown("<br><hr><center>📍 عمان - شارع المدينة | 📞 0790000000 | 📸 @Saj_Shawarma</center>", unsafe_allow_html=True)
